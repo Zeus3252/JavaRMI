@@ -1,1 +1,1 @@
-# SocketProgrammingJava
+# RMIServerJava
