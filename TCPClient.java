@@ -1,62 +1,24 @@
-import java.net.*; //Client side
-import java.io.*;
- 
-public class TCPClient
-{
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-    private Socket socket = null;
-    private DataInputStream  input = null;
-    private DataOutputStream out = null;
- 
-    public TCPClient(String address, int port)
-    {
-        try
-        {
-            socket = new Socket(address, port);
-            System.out.println("Connection sucessful");
- 
-            input  = new DataInputStream(System.in);
- 
-            out    = new DataOutputStream(socket.getOutputStream());
+
+
+public class Client {
+
+    private Client() {}
+
+    public static void main(String[] args) {
+
+        String host = (args.length < 1) ? null : args[0];
+        try {
+	    
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
+            Hello stub = (Hello) registry.lookup("Hello");
+            String response = stub.sayHello();
+            System.out.println("response: " + response);
+        } catch (Exception e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
         }
-        catch(UnknownHostException u)
-        {
-            System.out.println(u);
-        }
-        catch(IOException i)
-        {
-            System.out.println(i);
-        }
- 
-        String line = "";
- 
-        while (!line.equals("Over"))
-        {
-            try
-            {
-                line = input.readLine();
-                out.writeUTF(line);
-            }
-            catch(IOException i)
-            {
-                System.out.println(i);
-            }
-        }
- 
-        try
-        {
-            input.close();
-            out.close();
-            socket.close();
-        }
-        catch(IOException i)
-        {
-            System.out.println(i);
-        }
-    }
- 
-    public static void main(String args[])
-    {
-        TCPClient client = new TCPClient("127.0.0.1", 7896);
     }
 }
